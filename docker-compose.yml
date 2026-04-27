@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  # TimescaleDB — banco de dados para séries temporais
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: goldtrader-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: goldtrader
+      POSTGRES_PASSWORD: goldtrader_dev
+      POSTGRES_DB: goldtrader
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./packages/core/data_feed/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U goldtrader"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis — cache de candles e estado do sistema
+  redis:
+    image: redis:7-alpine
+    container_name: goldtrader-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  # GoldTrader API — FastAPI backend
+  api:
+    build: .
+    container_name: goldtrader-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=timescaledb
+      - DB_PORT=5432
+      - DB_NAME=goldtrader
+      - DB_USER=goldtrader
+      - DB_PASSWORD=goldtrader_dev
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+
+volumes:
+  timescaledb_data:
+    driver: local
+  redis_data:
+    driver: local

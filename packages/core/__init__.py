@@ -1,0 +1,1 @@
+"""GoldTrader Pro — Core Engine."""

@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Data
+data/historical/*.csv
+data/historical/*.parquet
+data/historical/*.json
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Flow
+.claude-flow/
+.mcp.json
+.claude/
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+
+# MyPy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
+
+# Node (dashboard)
+node_modules/
+.next/
