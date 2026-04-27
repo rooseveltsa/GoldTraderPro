@@ -29,10 +29,7 @@ app = FastAPI(
 # CORS — permitir acesso do dashboard (Vercel)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",       # Dev local Next.js
-        "https://*.vercel.app",        # Vercel previews
-    ],
+    allow_origins=["*"],  # Permitir todos para dev/demo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
